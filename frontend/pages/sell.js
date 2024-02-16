@@ -1,5 +1,5 @@
 export default function SellPage() {
-  return <div>
-    <p>Sell!</p>
-  </div>
+  return (
+      <p>Hello I am the sell page</p>
+  );
 }
