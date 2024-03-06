@@ -26,5 +26,8 @@ export default withAuth(
     },
     lists,
     session,
-  })
+    server: {
+      cors: { origin: [process.env.FRONTEND_URL], credentials: true },
+    }
+  }),
 );
