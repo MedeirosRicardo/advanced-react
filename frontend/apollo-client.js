@@ -1,11 +1,25 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, ApolloLink, HttpLink, InMemoryCache, concat } from "@apollo/client";
 import { endPoint, prodEndpoint } from './config';
+
+const httpLink = new HttpLink({
+  uri: process.env.NODE_ENV === 'development' ? endPoint : prodEndpoint
+});
+
+const authMiddleware = new ApolloLink((operation, forward) => {
+  operation.setContext(({ headers = {} }) => ({
+    headers: {
+      ...headers,
+      authorization: localStorage.getItem('token') || null,
+    }
+  }));
+  return forward(operation);
+});
+
 
 const createApolloClient = () => {
   return new ApolloClient({
-    uri: process.env.NODE_ENV === 'development' ? endPoint : prodEndpoint,
+    link: concat(authMiddleware, httpLink),
     credentials: 'include',
-    // headers,
     cache: new InMemoryCache({
       typePolicies: {
         Query: {
