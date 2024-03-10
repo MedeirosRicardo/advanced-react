@@ -1,24 +1,16 @@
-import { ApolloClient, ApolloLink, HttpLink, InMemoryCache, concat } from "@apollo/client";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { endPoint, prodEndpoint } from './config';
+import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
 
-const httpLink = new HttpLink({
-  uri: process.env.NODE_ENV === 'development' ? endPoint : prodEndpoint
-});
-
-const authMiddleware = new ApolloLink((operation, forward) => {
-  operation.setContext(({ headers = {} }) => ({
-    headers: {
-      ...headers,
-      authorization: localStorage.getItem('token') || null,
-    }
-  }));
-  return forward(operation);
-});
-
-const createApolloClient = () => {
+const createApolloClient = (headers) => {
   return new ApolloClient({
-    link: concat(authMiddleware, httpLink),
-    credentials: 'include',
+    link: createUploadLink({
+      uri: process.env.NODE_ENV === 'development' ? endPoint : prodEndpoint,
+      fetchOptions: {
+        credentials: 'include',
+      },
+      headers,
+    }),
     cache: new InMemoryCache({
       typePolicies: {
         Query: {

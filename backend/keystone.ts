@@ -25,6 +25,17 @@ export default withAuth(
       url: process.env.DATABASE_URL,
     },
     lists,
+    storage: {
+      my_local_images: {
+        kind: 'local',
+        type: 'image',
+        generateUrl: path => `${process.env.BASE_URL}/images${path}`,
+        serverRoute: {
+          path: '/images',
+        },
+        storagePath: 'public/images',
+      },
+    },
     session,
     server: {
       cors: { origin: [process.env.FRONTEND_URL], credentials: true },

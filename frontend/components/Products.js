@@ -12,7 +12,7 @@ const ALL_PRODUCTS_QUERY = gql`
       photo {
         id
         image {
-          publicUrlTransformed
+          url
         }
       }
     }
