@@ -21,11 +21,11 @@ export default function MyApp({ Component, pageProps}) {
   ); 
 }
 
-MyApp.getInitialProps = async (AppContext) => {
+MyApp.getInitialProps = async ({ Component, ctx }) => {
   let pageProps = {};
-  if(App.getInitialProps){
-    pageProps = await App.getInitialProps(AppContext) 
+  if(Component.getInitialProps){
+    pageProps = await Component.getInitialProps(ctx) 
   }
-  pageProps.query = AppContext.query;
+  pageProps.query = ctx.query;
   return { pageProps };
 }
