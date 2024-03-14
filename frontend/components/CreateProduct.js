@@ -9,7 +9,7 @@ const CREATE_PRODUCT_MUTATION = gql`
     $name: String!
     $description: String!
     $price: Int!
-    $image: Upload
+    $image: ImageFieldInput
   ) {
     createProduct(
       data:{
@@ -42,29 +42,39 @@ export default function CreateProduct() {
     description: 'These are nice shoes!'
   });
 
-  const [createProduct, { loading, error, data }] = useMutation(CREATE_PRODUCT_MUTATION, {
-    variables: inputs,
-  });
+  const [createProduct, { loading, error, data }] = useMutation(CREATE_PRODUCT_MUTATION,
+    {
+      variables: {
+        name: inputs.name,
+        description: inputs.description,
+        price: inputs.price,
+        image: {
+          upload: inputs.image,
+        },
+        altText: inputs.name,
+      },
+    }
+  );
 
   return (
-    <Form
+    <Form encType="multipart/form-data"
       onSubmit={async (e) => {
         e.preventDefault();
-        console.log(inputs);
         // Submit the input fields to the backend
-        const res = await createProduct();
-        console.log(res);
+        await createProduct();
+        clearForm();
       }}
     >
       <DisplayError error={error} />
       <fieldset disabled={loading} aria-busy={loading}>
         <label htmlFor="image">
-          Name
+          Image
           <input
             required
             type="file"
             id="image"
             name="image"
+            accept="image/*"
             onChange={handleChange}
           />
         </label>
