@@ -7,9 +7,10 @@ const createApolloClient = (headers) => {
   return new ApolloClient({
     link: createUploadLink({
       uri: process.env.NODE_ENV === 'development' ? endPoint : prodEndpoint,
-      headers: {
-        "Apollo-Require-Preflight": "true",
+      fetchOptions: {
+        credentials: 'include',
       },
+      headers,
     }),
     cache: new InMemoryCache({
       typePolicies: {
