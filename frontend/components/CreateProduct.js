@@ -60,7 +60,7 @@ export default function CreateProduct() {
   );
 
   return (
-    <Form encType="multipart/form-data"
+    <Form
       onSubmit={async (e) => {
         e.preventDefault();
         // Submit the input fields to the backend
