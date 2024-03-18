@@ -9,11 +9,16 @@ const DELETE_PRODUCT_MUTATION = gql`
   }
 `;
 
+function update(cache, paylod) {
+  cache.evict(cache.identify(paylod.data.deleteProduct));
+}
+
 export default function DeleteProduct({ id, children }) {
 
   const [deleteProduct, { loading }] = useMutation(
     DELETE_PRODUCT_MUTATION, {
     variables: { id },
+    update,
   }
   );
 
