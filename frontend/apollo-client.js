@@ -1,6 +1,7 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { endPoint, prodEndpoint } from './config';
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
+import paginationField from "./lib/paginationField";
 
 const createApolloClient = (headers) => {
   return new ApolloClient({
@@ -15,6 +16,7 @@ const createApolloClient = (headers) => {
         Query: {
           fields: {
             // TODO: Add Products pagination
+            products: paginationField(),
           }
         }
       }
