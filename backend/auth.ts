@@ -52,6 +52,11 @@ const { withAuth } = createAuth({
     // it uses context.sudo() to do this, which bypasses any access control you might have
     //   you shouldn't use this in production
   },
+  passwordResetLink: {
+    sendToken: async ({ itemId, identity, token }) => 
+    await console.log(itemId, identity, token),
+    tokensValidForMins: 60,
+  }
 });
 
 // statelessSessions uses cookies for session tracking
