@@ -130,7 +130,6 @@ export const lists: Lists = {
   CartItem: list({
     access: allowAll,
     fields: {
-      // TODO: Custom label in here
       quantity: integer({
         defaultValue: 1,
         validation: { isRequired: true },
