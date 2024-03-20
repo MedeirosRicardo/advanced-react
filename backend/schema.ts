@@ -56,6 +56,18 @@ export const lists: Lists = {
         // this sets the timestamp to Date.now() when the user is first created
         defaultValue: { kind: 'now' },
       }),
+      cart: relationship({
+        ref: 'CartItem.user',
+        many: true,
+        ui: {
+          createView: {
+            fieldMode: 'hidden',
+          },
+          itemView: {
+            fieldMode: 'read',
+          },
+        }
+      }),
     },
   }),
 
@@ -112,5 +124,23 @@ export const lists: Lists = {
         initialColumns: ['image', 'altText', 'product'],
       },
     },
+  }),
+
+  // This is our cart list
+  CartItem: list({
+    access: allowAll,
+    fields: {
+      // TODO: Custom label in here
+      quantity: integer({
+        defaultValue: 1,
+        validation: { isRequired: true },
+      }),
+      product: relationship({
+        ref: 'Product'
+      }),
+      user: relationship({
+        ref: 'User.cart'
+      }),
+    }
   }),
 };
