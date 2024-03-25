@@ -1,5 +1,3 @@
-import { KeystoneContext } from "@keystone-6/core/types";
-
 export default async function addToCart(
   root: any,
   { productId }: any,

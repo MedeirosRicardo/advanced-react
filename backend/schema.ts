@@ -6,7 +6,7 @@ import 'dotenv/config';
 // If you want to learn more about how lists are configured, please read
 // - https://keystonejs.com/docs/config/lists
 
-import { list } from '@keystone-6/core';
+import { graphql, list } from '@keystone-6/core';
 import { allowAll } from '@keystone-6/core/access';
 
 // see https://keystonejs.com/docs/fields/overview for the full list of fields
@@ -19,11 +19,13 @@ import {
   select,
   integer,
   image,
+  virtual,
 } from '@keystone-6/core/fields';
 
 // when using Typescript, you can refine your types to a stricter subset by importing
 // the generated types from '.keystone/types'
 import type { Lists } from '.keystone/types';
+import formatMoney from './lib/formatMoney';
 
 export const lists: Lists = {
   User: list({
@@ -67,6 +69,10 @@ export const lists: Lists = {
             fieldMode: 'read',
           },
         }
+      }),
+      orders: relationship({
+        ref: 'Order.user',
+        many: true,
       }),
     },
   }),
@@ -141,5 +147,60 @@ export const lists: Lists = {
         ref: 'User.cart'
       }),
     }
+  }),
+
+  // This is our OrderItem list
+  OrderItem: list({
+    access: allowAll,
+    fields: {
+      name: text({ validation: { isRequired: true } }),
+      description: text({
+        ui: {
+          displayMode: 'textarea',
+        },
+      }),
+      photo: relationship({
+        ref: 'ProductImage',
+        ui: {
+          displayMode: 'cards',
+          cardFields: ['image', 'altText'],
+          inlineCreate: {
+            fields: ['image', 'altText'],
+          },
+          inlineEdit: {
+            fields: ['image', 'altText'],
+          },
+        },
+      }),
+      price: integer(),
+      quantity: integer(),
+      order: relationship({
+        ref: 'Order.item',
+      }),
+    },
+  }),
+
+  // This is our Order list
+  Order: list({
+    access: allowAll,
+    fields: {
+      label: virtual({
+        field: graphql.field({
+          type: graphql.String,
+          resolve(item) {
+            return `${formatMoney(item.total)}`;
+          },
+        }),
+      }),
+      total: integer(),
+      item: relationship({
+        ref: 'OrderItem.order',
+        many: true,
+      }),
+      user: relationship({
+        ref: 'User.orders'
+      }),
+      charge: text(),
+    },
   }),
 };
