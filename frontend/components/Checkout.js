@@ -4,6 +4,21 @@ import styled from "styled-components";
 import SickButton from "./styles/SickButton";
 import { useState } from "react";
 import nProgress from "nprogress";
+import { gql, useMutation } from "@apollo/client";
+
+const CREATE_ORDER_MUTATION = gql`
+  mutation CREATE_ORDER_MUTATION($token: String!) {
+    checkout(token: $token) {
+      id
+      charge
+      total
+      item {
+        id
+        name
+      }
+    }
+  }
+`;
 
 const CheckoutFormStyles = styled.form`
   box-shadow: 0 1px 2px 2px rgba(0, 0, 0, 0.04);
@@ -22,6 +37,7 @@ function CheckoutForm() {
   const [loading, setloading] = useState(false);
   const stripe = useStripe();
   const elements = useElements();
+  const [checkout, { error: graphQLError }] = useMutation(CREATE_ORDER_MUTATION);
 
   async function handleSubmit(e) {
     // 1. Stop the form from submitting and turn the loader on
@@ -34,12 +50,18 @@ function CheckoutForm() {
       type: 'card',
       card: elements.getElement(CardElement),
     });
-    console.log(paymentMethod)
     // 4. Handle any errors from stripe
     if (error) {
       setError(error);
+      nProgress.done();
+      return;
     }
     // 5. Send the tolen from step 3 to our keystone server via a custom mutation
+    const order = await checkout({
+      variables: {
+        token: paymentMethod.id
+      },
+    });
     // 6. Change the page to view the order
     // 7. Close the cart
     // 8. Turn the loader off
@@ -50,6 +72,7 @@ function CheckoutForm() {
   return (
     <CheckoutFormStyles onSubmit={handleSubmit}>
       {error && <p style={{ fontSize: 12 }}>{error.message}</p>}
+      {graphQLError && <p style={{ fontSize: 12 }}>{graphQLError.message}</p>}
       <CardElement />
       <SickButton>Check Out Now</SickButton>
     </CheckoutFormStyles>
