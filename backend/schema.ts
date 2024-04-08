@@ -26,6 +26,8 @@ import {
 // the generated types from '.keystone/types'
 import type { Lists } from '.keystone/types';
 import formatMoney from './lib/formatMoney';
+import { permissionFields } from './lib/fields';
+import { isSignedIn, rules } from './access';
 
 export const lists: Lists = {
   User: list({
@@ -74,12 +76,28 @@ export const lists: Lists = {
         ref: 'Order.user',
         many: true,
       }),
+      role: relationship({
+        ref: 'Role.assignedTo',
+      }),
+      products: relationship({
+        ref: 'Product.user',
+        many: true,
+      }),
     },
   }),
 
   // This is our product list
   Product: list({
-    access: allowAll,
+    access: {
+      operation: {
+        create: isSignedIn,
+      },
+      filter: {
+        query: rules.canReadProducts,
+        update: rules.canManageProducts,
+        delete: rules.canManageProducts,
+      }
+    },
     fields: {
       name: text({ validation: { isRequired: true } }),
       description: text({
@@ -112,6 +130,12 @@ export const lists: Lists = {
         },
       }),
       price: integer(),
+      user: relationship({
+        ref: 'User.products',
+        hooks: {
+          resolveInput: ({ context }: any) => ({ connect: { id: context.session.itemId }})
+        },
+      })
     },
   }),
 
@@ -202,5 +226,21 @@ export const lists: Lists = {
       }),
       charge: text(),
     },
+  }),
+
+  // This is our Role list
+  Role: list({
+    access: allowAll,
+    fields: {
+      name: text({ validation: { isRequired: true } }),
+      ...permissionFields,
+      assignedTo: relationship({
+        ref: 'User.role',
+        many: true,
+        ui: {
+          itemView: { fieldMode: 'read' },
+        },
+      }),
+    }
   }),
 };
