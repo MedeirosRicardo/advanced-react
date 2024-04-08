@@ -27,15 +27,27 @@ import {
 import type { Lists } from '.keystone/types';
 import formatMoney from './lib/formatMoney';
 import { permissionFields } from './lib/fields';
-import { isSignedIn, rules } from './access';
+import { isSignedIn, permissions, rules } from './access';
 
 export const lists: Lists = {
   User: list({
-    // WARNING
-    //   for this starter project, anyone can create, query, update and delete anything
-    //   if you want to prevent random people on the internet from accessing your data,
-    //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
-    access: allowAll,
+    access: {
+      operation: {
+        create: () => true,
+        // only people with the permission can delete themselves!
+        // You can't delete yourself
+        delete: permissions.canManageUsers,
+      },
+      filter: {
+        query: rules.canManageUsers,
+        update: rules.canManageUsers,
+      },
+    },
+
+    ui: {
+      hideCreate: args => !permissions.canManageUsers(args),
+      hideDelete: args => !permissions.canManageUsers(args),
+    },
 
     // this is the fields for our User list
     fields: {
@@ -78,6 +90,10 @@ export const lists: Lists = {
       }),
       role: relationship({
         ref: 'Role.assignedTo',
+        access: {
+          create: permissions.canManageUsers,
+          update: permissions.canManageUsers,
+        }
       }),
       products: relationship({
         ref: 'Product.user',
@@ -133,7 +149,7 @@ export const lists: Lists = {
       user: relationship({
         ref: 'User.products',
         hooks: {
-          resolveInput: ({ context }: any) => ({ connect: { id: context.session.itemId }})
+          resolveInput: ({ context }: any) => ({ connect: { id: context.session.itemId } })
         },
       })
     },
@@ -141,7 +157,14 @@ export const lists: Lists = {
 
   // This is our image field
   ProductImage: list({
-    access: allowAll,
+    access: {
+      operation: {
+        create: isSignedIn,
+        query: () => true,
+        update: permissions.canManageProducts,
+        delete: permissions.canManageProducts,
+      },
+    },
     fields: {
       image: image({ storage: 'my_local_images' }),
       altText: text(),
@@ -158,7 +181,16 @@ export const lists: Lists = {
 
   // This is our cart list
   CartItem: list({
-    access: allowAll,
+    access: {
+      operation: {
+        create: isSignedIn,
+      },
+      filter: {
+        query: rules.canOrder,
+        update: rules.canOrder,
+        delete: rules.canOrder,
+      },
+    },
     fields: {
       quantity: integer({
         defaultValue: 1,
@@ -175,7 +207,16 @@ export const lists: Lists = {
 
   // This is our OrderItem list
   OrderItem: list({
-    access: allowAll,
+    access: {
+      operation: {
+        create: isSignedIn,
+        update: () => false,
+        delete: () => false,
+      },
+      filter: {
+        query: rules.canManageOrderItems,
+      },
+    },
     fields: {
       name: text({ validation: { isRequired: true } }),
       description: text({
@@ -206,7 +247,16 @@ export const lists: Lists = {
 
   // This is our Order list
   Order: list({
-    access: allowAll,
+    access: {
+      operation: {
+        create: isSignedIn,
+        update: () => false,
+        delete: () => false,
+      },
+      filter: {
+        query: rules.canOrder,
+      }
+    },
     fields: {
       label: virtual({
         field: graphql.field({
@@ -230,7 +280,19 @@ export const lists: Lists = {
 
   // This is our Role list
   Role: list({
-    access: allowAll,
+    access: {
+      operation: {
+        create: permissions.canManageRoles,
+        query: permissions.canManageRoles,
+        update: permissions.canManageRoles,
+        delete: permissions.canManageRoles,
+      },
+    },
+    ui: {
+      hideCreate: args => !permissions.canManageRoles(args),
+      hideDelete: args => !permissions.canManageRoles(args),
+      isHidden: args => !permissions.canManageRoles(args),
+    },
     fields: {
       name: text({ validation: { isRequired: true } }),
       ...permissionFields,
