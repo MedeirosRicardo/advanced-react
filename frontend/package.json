@@ -6,7 +6,7 @@
     "dev": "next dev -p 7777",
     "build": "next build",
     "start": "next start -p 7777",
-    "test": "jest --watch --onlyChanged",
+    "test": "jest --watch",
     "lint": "next lint"
   },
   "dependencies": {
