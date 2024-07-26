@@ -57,7 +57,7 @@ export default function SingleProduct({ id }) {
   const { product } = data;
 
   return (
-    <ProductStyles>
+    <ProductStyles data-testid="singleProduct">
       <Head>
         <title>Sick Fits | {product.name}</title>
       </Head>
@@ -69,3 +69,5 @@ export default function SingleProduct({ id }) {
     </ProductStyles>
   )
 }
+
+export { SINGLE_ITEM_QUERY };
