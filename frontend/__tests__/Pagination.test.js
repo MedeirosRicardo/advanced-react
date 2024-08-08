@@ -11,6 +11,16 @@ describe('<Pagination/>', () => {
         <Pagination />
       </MockedProvider>
     );
-    
+    expect(container).toHaveTextContent('Loading...');
+  });
+  it('renders pagination for 18 items', async () => {
+    const { container, debug } = render(
+      <MockedProvider mocks={makePaginationMocksFor(18)}>
+        <Pagination page={1} />
+      </MockedProvider>
+    );
+    await screen.findByTestId('pagination');
+    debug();
+    expect(container).toHaveTextContent('Page 1 of 9');
   });
 });
