@@ -39,9 +39,9 @@ export default function CreateProduct() {
 
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     image: '',
-    name: 'Nice Shoes',
-    price: 34234,
-    description: 'These are nice shoes!'
+    name: '',
+    price: 0,
+    description: ''
   });
 
   const [createProduct, { loading, error, data }] = useMutation(CREATE_PRODUCT_MUTATION,
@@ -122,3 +122,5 @@ export default function CreateProduct() {
     </Form>
   );
 }
+
+export { CREATE_PRODUCT_MUTATION };

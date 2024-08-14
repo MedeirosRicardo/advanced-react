@@ -11,9 +11,11 @@ const fakeItem = () => ({
   user: null,
   photo: {
     id: 'abc123',
-    altText: 'dogs are best',
-    image: {
-      url: 'dog.jpg',
+    create: {
+      image: {
+        url: 'dog.jpg',
+      },
+      altText: 'dogs are best',
     },
   },
   name: 'dogs are best',
