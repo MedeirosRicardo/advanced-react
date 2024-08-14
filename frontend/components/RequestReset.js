@@ -30,7 +30,7 @@ export default function RequestReset() {
       <h2>Request a Password Reset</h2>
       <DisplayError error={error} />
       <fieldset>
-        {data?.sendUserPasswordResetLink && (
+        {data?.sendUserPasswordResetLink === null && (
           <p>Success! Check your email for a link!</p>
         )}
         <label htmlFor='email'>
@@ -49,3 +49,5 @@ export default function RequestReset() {
     </Form>
   );
 }
+
+export { REQUEST_RESET_MUTATION };
