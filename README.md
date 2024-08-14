@@ -6,7 +6,7 @@ A Premium React + Apollo + Keystone Training Course from Wes Bos. You can grab t
 
 ## :memo: License
 
-This project is under the MIT license. See the [LICENSE](https://github.com/MedeirosRicardo/advanced-react/LICENSE) for more information
+This project is under the MIT license. See the [LICENSE](https://github.com/MedeirosRicardo/advanced-react/blob/main/LICENSE) for more information
 
 ## :mailbox_with_mail: Get in touch!
 
